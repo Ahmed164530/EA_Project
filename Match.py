@@ -102,7 +102,7 @@ def shared_fitness(individual, population, sigma_share=0.3, alpha=1):
 def create_population(size):
     return [create_individual() for _ in range(size)]
 
-# Tournament Selection (with shared fitness)
+#Tournament Selection (with shared fitness)
 def tournament_selection(population, tournament_size=3):
     tournament = random.sample(population, tournament_size)
     fitnesses = [shared_fitness(ind, population) for ind in tournament]
@@ -154,7 +154,7 @@ def order_crossover(parent1, parent2):
     return child1, child2
 
 # Swap Mutation
-def swap_mutation(schedule, mutation_rate=0.1):
+def swap_mutation(schedule, mutation_rate=0.2):
     if random.random() < mutation_rate:
         idx1, idx2 = random.sample(range(len(schedule)), 2)
         schedule[idx1], schedule[idx2] = schedule[idx2], schedule[idx1]
@@ -171,7 +171,7 @@ def swap_mutation(schedule, mutation_rate=0.1):
     
     return schedule
 
-# Survivor Selection (elitism)
+#Survivor Selection (elitism)
 def survivor_selection(population, offspring):
     combined = population + offspring
     combined_sorted = sorted(combined, key=lambda ind: shared_fitness(ind, combined), reverse=True)
@@ -188,7 +188,8 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
 
     for generation in range(max_generations):
         print(f"\nGeneration {generation + 1}:")
-        fitnesses = [fitness_function(ind) for ind in population]
+        # fitnesses = [fitness_function(ind) for ind in population]
+        fitnesses = [shared_fitness(ind, population) for ind in population]
         best_current_fitness = max(fitnesses)
         best_index = fitnesses.index(best_current_fitness)
         best_individual = population[best_index]
@@ -223,6 +224,13 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
             offspring.extend([child1, child2])
 
         population = survivor_selection(population, offspring)
+    return best_individual, best_fitness
 
 # Run
 run_genetic_algorithm()
+
+#Best Schedule
+best_schedule, best_score = run_genetic_algorithm()
+print("\nFinal Best Schedule with Fitness =", best_score)
+for match in best_schedule:
+    print(f"{match[0]} vs {match[1]} on {match[2]} - Slot {match[3]} at {match[4]}")
