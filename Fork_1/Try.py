@@ -1,6 +1,10 @@
+import tkinter as tk
+from tkinter import ttk, filedialog, messagebox
+import threading
 import random
 from itertools import combinations
 from collections import defaultdict
+import csv
 
 # Example data
 teams = ["A", "B", "C", "D"]
@@ -187,7 +191,6 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
     mutation_rate = 0.1
 
     for generation in range(max_generations):
-        print(f"\nGeneration {generation + 1}:")
         # fitnesses = [fitness_function(ind) for ind in population]
         fitnesses = [shared_fitness(ind, population) for ind in population]
         best_current_fitness = max(fitnesses)
@@ -200,19 +203,8 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
             best_fitness = best_current_fitness
             generations_without_improvement = 0
 
-        print(f"Best fitness: {best_current_fitness}")
-        for match in best_individual:
-            print(f"{match[0]} vs {match[1]} on {match[2]} - Slot {match[3]} at {match[4]}")
-
         if generations_without_improvement >= max_no_improvement:
-            print("\nTermination condition reached: No improvement after several generations.")
             break
-
-        # Adjust mutation rate adaptively
-        if generations_without_improvement > 5:
-            mutation_rate = min(1.0, mutation_rate * 1.1)  # exploration
-        else:
-            mutation_rate = max(0.01, mutation_rate * 0.9)  # exploitation
 
         offspring = []
         for _ in range(population_size // 2):
@@ -224,13 +216,49 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
             offspring.extend([child1, child2])
 
         population = survivor_selection(population, offspring)
+
     return best_individual, best_fitness
 
-# Run
-run_genetic_algorithm()
+# === Saving the seeds in a file ===
+def save_seeds_to_file(results):
+    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV Files", "*.csv")])
+    if file_path:
+        with open(file_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["Seed", "Fitness", "Match", "Day", "Slot", "Venue"])
+            for seed, matches in results:
+                for match in matches:
+                    team1, team2, day, time_slot, venue = match
+                    writer.writerow([seed, fitness_function(matches), f"{team1} vs {team2}", day, f"Slot {time_slot}", venue])
 
-#Best Schedule
-best_schedule, best_score = run_genetic_algorithm()
-print("\nFinal Best Schedule with Fitness =", best_score)
-for match in best_schedule:
-    print(f"{match[0]} vs {match[1]} on {match[2]} - Slot {match[3]} at {match[4]}")
+# === GUI Integration ===
+current_schedule = []
+
+def run_ga_thread():
+    def task():
+        results = []
+        for seed in range(30):
+            random.seed(seed)
+            best, score = run_genetic_algorithm(population_size=10, max_generations=100)
+            results.append((seed, best))
+        
+        save_seeds_to_file(results)
+        messagebox.showinfo("Success", "Completed all 30 seeds and saved to file.")
+
+    threading.Thread(target=task).start()
+
+root = tk.Tk()
+root.title("⚽ Tournament Scheduler via GA")
+root.geometry("1000x700")
+
+lbl_title = tk.Label(root, text="Sports Tournament Schedule (GA)", font=("Arial", 16, "bold"))
+lbl_title.pack(pady=10)
+
+frame_top = tk.Frame(root)
+frame_top.pack()
+
+btn_run_seeds = tk.Button(frame_top, text="Run 30 Seeds", command=run_ga_thread)
+btn_run_seeds.grid(row=0, column=0, padx=10, pady=10)
+
+# Keep the rest of your interface intact
+root.mainloop()
