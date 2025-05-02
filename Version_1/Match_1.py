@@ -338,81 +338,113 @@ def add_day():
         days.append(name)
         messagebox.showinfo("Success", f"Day '{name}' added.")
 
+def apply_theme():
+    if is_dark_mode.get():
+        # Dark Theme
+        root.configure(bg="#1e1e1e")
+        style.configure("TLabel", background="#1e1e1e", foreground="#d4d4d4")
+        style.configure("TEntry", fieldbackground="#2d2d2d", foreground="#d4d4d4", insertcolor="#d4d4d4")
+        style.configure("TButton", background="#007acc", foreground="white")
+        style.configure("TCombobox", fieldbackground="#2d2d2d", foreground="#d4d4d4", background="#2d2d2d")
+        style.configure("Treeview", background="#252526", foreground="#dcdcdc", fieldbackground="#252526")
+        style.configure("Treeview.Heading", background="#007acc", foreground="white")
+        style.configure("TLabelframe", background="#1e1e1e", foreground="#d4d4d4")
+        style.configure("TLabelframe.Label", background="#1e1e1e", foreground="#007acc")
+    else:
+        # Light Theme
+        root.configure(bg="#eaf6fb")
+        style.configure("TLabel", background="#eaf6fb", foreground="#003366")
+        style.configure("TEntry", fieldbackground="#ffffff", foreground="#003366", insertcolor="#003366")
+        style.configure("TButton", background="#007acc", foreground="white")
+        style.configure("TCombobox", fieldbackground="#ffffff", foreground="#003366", background="#ffffff")
+        style.configure("Treeview", background="#ffffff", foreground="#003366", fieldbackground="#ffffff")
+        style.configure("Treeview.Heading", background="#007acc", foreground="white")
+        style.configure("TLabelframe", background="#eaf6fb", foreground="#003366")
+        style.configure("TLabelframe.Label", background="#eaf6fb", foreground="#007acc")
+
+# GUI setup
 root = tk.Tk()
 root.title("⚽ Tournament Scheduler via GA")
 root.geometry("1000x700")
 
-lbl_title = tk.Label(root, text="Sports Tournament Schedule (GA) ⚽", font=("Arial", 16, "bold"))
+# Style object
+style = ttk.Style()
+style.theme_use("default")
+
+# Theme toggle
+is_dark_mode = tk.BooleanVar(value=False)
+dark_toggle = ttk.Checkbutton(root, text="Dark Mode", variable=is_dark_mode, command=apply_theme)
+dark_toggle.pack(anchor="ne", padx=10, pady=5)
+
+# Title
+lbl_title = ttk.Label(root, text="⚽ Sports Tournament Schedule (GA)", font=("Segoe UI", 18, "bold"))
 lbl_title.pack(pady=10)
 
-frame_top = tk.Frame(root)
-frame_top.pack()
+# --- Parameters Frame ---
+frame_top = ttk.LabelFrame(root, text="Genetic Algorithm Parameters", padding=10)
+frame_top.pack(padx=10, pady=10, fill="x")
 
-entry_gen = tk.Entry(frame_top, width=5)
-entry_gen.insert(0, "50")
-entry_gen.grid(row=0, column=0)
+labels = ["Generations", "Population", "Mutation", "Crossover"]
+defaults = ["50", "10", "0.1", "0.7"]
+entries = []
 
-entry_pop = tk.Entry(frame_top, width=5)
-entry_pop.insert(0, "10")
-entry_pop.grid(row=0, column=1)
+for i, (label_text, default) in enumerate(zip(labels, defaults)):
+    ttk.Label(frame_top, text=label_text).grid(row=1, column=i, padx=5, pady=2)
+    entry = ttk.Entry(frame_top, width=6)
+    entry.insert(0, default)
+    entry.grid(row=0, column=i, padx=5)
+    entries.append(entry)
 
-entry_mut = tk.Entry(frame_top, width=5)
-entry_mut.insert(0, "0.1")
-entry_mut.grid(row=0, column=2)
+entry_gen, entry_pop, entry_mut, entry_cross = entries
 
-entry_cross = tk.Entry(frame_top, width=5)
-entry_cross.insert(0, "0.7")  
-entry_cross.grid(row=0, column=3)
+# Seed
+ttk.Label(frame_top, text="Seed").grid(row=1, column=4, padx=5)
+entry_seed = ttk.Entry(frame_top, width=8)
+entry_seed.insert(0, "42")
+entry_seed.grid(row=0, column=4, padx=5)
 
-entry_seed = tk.Entry(frame_top, width=7)
-entry_seed.insert(0, "42")  
-entry_seed.grid(row=0, column=8)
+# Buttons and Format
+btn_generate = ttk.Button(frame_top, text="Generate", command=run_ga_thread)
+btn_generate.grid(row=0, column=7, padx=10)
 
-tk.Label(frame_top, text="Seed").grid(row=1, column=8)
-
-
-tk.Label(frame_top, text="Generations").grid(row=1, column=0)
-tk.Label(frame_top, text="Population").grid(row=1, column=1)
-tk.Label(frame_top, text="Mutation").grid(row=1, column=2)
-tk.Label(frame_top, text="Crossover").grid(row=1, column=3)
-
-
-btn_generate = tk.Button(frame_top, text="Generate", command=run_ga_thread)
-btn_generate.grid(row=0, column=7, padx=5)
-
-lbl_score = tk.Label(frame_top, text="")
-lbl_score.grid(row=0, column=4, padx=10)
-
-combo_format = ttk.Combobox(frame_top, values=["CSV", "Text"], state="readonly", width=6)
+combo_format = ttk.Combobox(frame_top, values=["CSV", "Text"], state="readonly", width=7)
 combo_format.set("CSV")
-combo_format.grid(row=0, column=5)
+combo_format.grid(row=0, column=5, padx=5)
 
-btn_save = tk.Button(frame_top, text="Save", command=lambda: save_schedule(current_schedule, combo_format.get()))
+btn_save = ttk.Button(frame_top, text="Save", command=lambda: save_schedule(current_schedule, combo_format.get()))
 btn_save.grid(row=0, column=6, padx=5)
 
+lbl_score = ttk.Label(frame_top, text="", font=("Segoe UI", 10, "italic"))
+lbl_score.grid(row=0, column=8, padx=10)
+
+# --- TreeView for Schedule ---
 cols = ("Match", "Day", "Venue", "Time")
-tree = ttk.Treeview(root, columns=cols, show='headings', height=12)
+tree = ttk.Treeview(root, columns=cols, show='headings', height=14)
 for col in cols:
     tree.heading(col, text=col)
     tree.column(col, width=200, anchor='center')
-tree.pack(pady=10)
+tree.pack(pady=10, padx=10, fill="x")
 
-frame_add = tk.Frame(root)
+# --- Add Inputs Frame ---
+frame_add = ttk.LabelFrame(root, text="Add Items", padding=10)
 frame_add.pack(pady=10)
 
-entry_team = tk.Entry(frame_add, width=10)
-entry_team.grid(row=0, column=0)
-btn_team = tk.Button(frame_add, text="Add Team", command=add_team)
-btn_team.grid(row=0, column=1)
+entry_team = ttk.Entry(frame_add, width=15)
+entry_team.grid(row=0, column=0, padx=5)
+btn_team = ttk.Button(frame_add, text="Add Team", command=add_team)
+btn_team.grid(row=0, column=1, padx=5)
 
-entry_venue = tk.Entry(frame_add, width=10)
-entry_venue.grid(row=0, column=2)
-btn_venue = tk.Button(frame_add, text="Add Venue", command=add_venue)
-btn_venue.grid(row=0, column=3)
+entry_venue = ttk.Entry(frame_add, width=15)
+entry_venue.grid(row=0, column=2, padx=5)
+btn_venue = ttk.Button(frame_add, text="Add Venue", command=add_venue)
+btn_venue.grid(row=0, column=3, padx=5)
 
-entry_day = tk.Entry(frame_add, width=10)
-entry_day.grid(row=0, column=4)
-btn_day = tk.Button(frame_add, text="Add Day", command=add_day)
-btn_day.grid(row=0, column=5)
+entry_day = ttk.Entry(frame_add, width=15)
+entry_day.grid(row=0, column=4, padx=5)
+btn_day = ttk.Button(frame_add, text="Add Day", command=add_day)
+btn_day.grid(row=0, column=5, padx=5)
+
+# Apply initial (light) theme
+apply_theme()
 
 root.mainloop()

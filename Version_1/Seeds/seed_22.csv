@@ -1,0 +1,44 @@
+Generations,75
+Population Size,10
+Mutation Rate,0.1
+Crossover Rate,0.7
+Fitness,Best Fitness: 920.00
+Seed,78
+
+Match,Day,Venue,Time Slot
+Manchester City vs Arsenal,Day 5,St. James' Park,Slot 2:00-4:00
+Manchester City vs Liverpool,Day 41,Villa Park,Slot 2:00-4:00
+Manchester City vs Chelsea,Day 34,Wembley,Slot 5:00-7:00
+Manchester City vs Manchester United,Day 46,Stamford Bridge,Slot 2:00-4:00
+Manchester City vs New Castle,Day 64,Old Trafford,Slot 8:00-10:00
+Manchester City vs Tottenham,Day 51,Stamford Bridge,Slot 5:00-7:00
+Manchester City vs Brentford,Day 36,Old Trafford,Slot 5:00-7:00
+Manchester City vs Brighton,Day 12,Emirates Stadium,Slot 2:00-4:00
+Arsenal vs Liverpool,Day 47,Elland Road,Slot 5:00-7:00
+Arsenal vs Chelsea,Day 8,Stamford Bridge,Slot 5:00-7:00
+Arsenal vs Manchester United,Day 21,Villa Park,Slot 2:00-4:00
+Arsenal vs New Castle,Day 61,Anfield,Slot 5:00-7:00
+Arsenal vs Tottenham,Day 59,Wembley,Slot 2:00-4:00
+Arsenal vs Brentford,Day 67,Goodison Park,Slot 5:00-7:00
+Arsenal vs Brighton,Day 14,Old Trafford,Slot 5:00-7:00
+Liverpool vs Chelsea,Day 67,Goodison Park,Slot 8:00-10:00
+Liverpool vs Manchester United,Day 10,Wembley,Slot 8:00-10:00
+Liverpool vs New Castle,Day 45,Wembley,Slot 2:00-4:00
+Liverpool vs Tottenham,Day 55,Villa Park,Slot 5:00-7:00
+Liverpool vs Brentford,Day 57,Emirates Stadium,Slot 5:00-7:00
+Liverpool vs Brighton,Day 24,Elland Road,Slot 5:00-7:00
+Chelsea vs Manchester United,Day 4,Anfield,Slot 8:00-10:00
+Chelsea vs New Castle,Day 36,Wembley,Slot 8:00-10:00
+Chelsea vs Tottenham,Day 57,Goodison Park,Slot 8:00-10:00
+Chelsea vs Brentford,Day 53,Etihad Stadium,Slot 2:00-4:00
+Chelsea vs Brighton,Day 56,St. James' Park,Slot 2:00-4:00
+Manchester United vs New Castle,Day 29,Elland Road,Slot 5:00-7:00
+Manchester United vs Tottenham,Day 45,Goodison Park,Slot 2:00-4:00
+Manchester United vs Brentford,Day 22,Wembley,Slot 2:00-4:00
+Manchester United vs Brighton,Day 44,Etihad Stadium,Slot 2:00-4:00
+New Castle vs Tottenham,Day 21,Goodison Park,Slot 8:00-10:00
+New Castle vs Brentford,Day 39,Wembley,Slot 8:00-10:00
+New Castle vs Brighton,Day 54,Wembley,Slot 2:00-4:00
+Tottenham vs Brentford,Day 16,Wembley,Slot 2:00-4:00
+Tottenham vs Brighton,Day 62,Emirates Stadium,Slot 5:00-7:00
+Brentford vs Brighton,Day 70,Etihad Stadium,Slot 8:00-10:00
