@@ -125,7 +125,7 @@ def tournament_selection(population, tournament_size=3):
     fitnesses = [shared_fitness(ind, population) for ind in tournament]
     winner_index = fitnesses.index(max(fitnesses))
     return tournament[winner_index]
-
+                    
 # Order Crossover 
 def order_crossover(parent1, parent2, crossover_rate=0.7):
     size = len(parent1)
