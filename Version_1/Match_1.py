@@ -8,13 +8,16 @@ import csv
 
 # Example data
 teams = [
-    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United","New Castle","Tottenham","Brentford","Brighton"
+    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United","New Castle","Tottenham","Brentford","Brighton","Everton"
 ]
 
 venues = [
     "Etihad Stadium", "Emirates Stadium", "Anfield", "Stamford Bridge", "Old Trafford","Wembley","Goodison Park","St. James' Park","Villa Park","Elland Road"
 ]
-days = [f"Day {i}" for i in range(1, 71)]  
+# days = [f"Day {i}" for i in range(1, 71)] 
+days = [f"Day {i}" for i in range(1, 41)] 
+
+ 
 time_slots = ["2:00-4:00", "5:00-7:00", "8:00-10:00"]
 
 # Generate all unique matches
@@ -61,7 +64,7 @@ def create_individual():
             raise Exception("Couldn't assign all matches without conflicts!")
     return schedule
 
-# Base Fitness Function
+#Base Fitness Function
 def fitness_function(schedule):
     penalty = 0
     team_schedule = defaultdict(list)
@@ -242,6 +245,8 @@ def run_genetic_algorithm(population_size=10, max_generations=100, convergence_t
             offspring.extend([child1, child2])
 
         population = survivor_selection(population, offspring)
+
+        
     return best_individual, best_fitness
 
 # === GUI Helper Functions ===
@@ -448,3 +453,10 @@ btn_day.grid(row=0, column=5, padx=5)
 apply_theme()
 
 root.mainloop()
+
+
+
+
+
+
+

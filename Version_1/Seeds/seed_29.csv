@@ -1,44 +1,53 @@
-Generations,50
-Population Size,10
-Mutation Rate,0.16
-Crossover Rate,0.6
-Fitness,Best Fitness: 920.00
-Seed,130
+Generations,100
+Population Size,20
+Mutation Rate,0.2
+Crossover Rate,0.9
+Fitness,Best Fitness: 720.00
+Seed,29
 
 Match,Day,Venue,Time Slot
-Manchester City vs Arsenal,Day 17,Goodison Park,Slot 8:00-10:00
-Manchester City vs Liverpool,Day 38,Etihad Stadium,Slot 8:00-10:00
-Manchester City vs Chelsea,Day 27,Elland Road,Slot 5:00-7:00
-Manchester City vs Manchester United,Day 42,Villa Park,Slot 5:00-7:00
+Manchester City vs Arsenal,Day 17,Anfield,Slot 2:00-4:00
+Manchester City vs Liverpool,Day 13,Anfield,Slot 2:00-4:00
+Manchester City vs Chelsea,Day 26,Anfield,Slot 2:00-4:00
+Manchester City vs Manchester United,Day 9,Goodison Park,Slot 5:00-7:00
 Manchester City vs New Castle,Day 25,Stamford Bridge,Slot 5:00-7:00
-Manchester City vs Tottenham,Day 47,Etihad Stadium,Slot 2:00-4:00
-Manchester City vs Brentford,Day 7,Elland Road,Slot 5:00-7:00
-Manchester City vs Brighton,Day 63,Old Trafford,Slot 5:00-7:00
-Arsenal vs Liverpool,Day 24,Wembley,Slot 8:00-10:00
-Arsenal vs Chelsea,Day 5,Emirates Stadium,Slot 2:00-4:00
-Arsenal vs Manchester United,Day 46,Goodison Park,Slot 8:00-10:00
-Arsenal vs New Castle,Day 10,Emirates Stadium,Slot 5:00-7:00
-Arsenal vs Tottenham,Day 37,Etihad Stadium,Slot 5:00-7:00
-Arsenal vs Brentford,Day 12,Stamford Bridge,Slot 5:00-7:00
-Arsenal vs Brighton,Day 51,Anfield,Slot 8:00-10:00
-Liverpool vs Chelsea,Day 68,Elland Road,Slot 2:00-4:00
-Liverpool vs Manchester United,Day 64,Old Trafford,Slot 2:00-4:00
-Liverpool vs New Castle,Day 46,St. James' Park,Slot 8:00-10:00
-Liverpool vs Tottenham,Day 2,Stamford Bridge,Slot 5:00-7:00
-Liverpool vs Brentford,Day 33,Villa Park,Slot 8:00-10:00
-Liverpool vs Brighton,Day 17,Etihad Stadium,Slot 5:00-7:00
-Chelsea vs Manchester United,Day 20,Anfield,Slot 2:00-4:00
-Chelsea vs New Castle,Day 38,Wembley,Slot 5:00-7:00
-Chelsea vs Tottenham,Day 57,Villa Park,Slot 5:00-7:00
-Chelsea vs Brentford,Day 25,St. James' Park,Slot 2:00-4:00
-Chelsea vs Brighton,Day 18,Goodison Park,Slot 2:00-4:00
-Manchester United vs New Castle,Day 34,Emirates Stadium,Slot 2:00-4:00
-Manchester United vs Tottenham,Day 68,Villa Park,Slot 8:00-10:00
-Manchester United vs Brentford,Day 36,Etihad Stadium,Slot 8:00-10:00
-Manchester United vs Brighton,Day 70,Stamford Bridge,Slot 5:00-7:00
-New Castle vs Tottenham,Day 26,Old Trafford,Slot 5:00-7:00
-New Castle vs Brentford,Day 18,Old Trafford,Slot 8:00-10:00
-New Castle vs Brighton,Day 27,St. James' Park,Slot 2:00-4:00
-Tottenham vs Brentford,Day 46,Stamford Bridge,Slot 8:00-10:00
-Tottenham vs Brighton,Day 33,St. James' Park,Slot 5:00-7:00
-Brentford vs Brighton,Day 43,Stamford Bridge,Slot 8:00-10:00
+Manchester City vs Tottenham,Day 18,Anfield,Slot 5:00-7:00
+Manchester City vs Brentford,Day 34,Old Trafford,Slot 2:00-4:00
+Manchester City vs Brighton,Day 40,Emirates Stadium,Slot 5:00-7:00
+Manchester City vs Everton,Day 23,Villa Park,Slot 5:00-7:00
+Arsenal vs Liverpool,Day 27,Anfield,Slot 2:00-4:00
+Arsenal vs Chelsea,Day 16,Old Trafford,Slot 5:00-7:00
+Arsenal vs Manchester United,Day 14,Wembley,Slot 8:00-10:00
+Arsenal vs New Castle,Day 10,Goodison Park,Slot 2:00-4:00
+Arsenal vs Tottenham,Day 11,Villa Park,Slot 8:00-10:00
+Arsenal vs Brentford,Day 25,Villa Park,Slot 2:00-4:00
+Arsenal vs Brighton,Day 9,Anfield,Slot 2:00-4:00
+Arsenal vs Everton,Day 36,Etihad Stadium,Slot 8:00-10:00
+Liverpool vs Chelsea,Day 36,Villa Park,Slot 8:00-10:00
+Liverpool vs Manchester United,Day 19,Old Trafford,Slot 8:00-10:00
+Liverpool vs New Castle,Day 17,Elland Road,Slot 2:00-4:00
+Liverpool vs Tottenham,Day 35,Emirates Stadium,Slot 5:00-7:00
+Liverpool vs Brentford,Day 21,Stamford Bridge,Slot 8:00-10:00
+Liverpool vs Brighton,Day 11,Etihad Stadium,Slot 2:00-4:00
+Liverpool vs Everton,Day 2,Villa Park,Slot 8:00-10:00
+Chelsea vs Manchester United,Day 11,Villa Park,Slot 5:00-7:00
+Chelsea vs New Castle,Day 6,Goodison Park,Slot 8:00-10:00
+Chelsea vs Tottenham,Day 5,Wembley,Slot 2:00-4:00
+Chelsea vs Brentford,Day 23,Elland Road,Slot 8:00-10:00
+Chelsea vs Brighton,Day 22,Elland Road,Slot 8:00-10:00
+Chelsea vs Everton,Day 18,St. James' Park,Slot 8:00-10:00
+Manchester United vs New Castle,Day 35,Wembley,Slot 5:00-7:00
+Manchester United vs Tottenham,Day 26,Emirates Stadium,Slot 8:00-10:00
+Manchester United vs Brentford,Day 1,Old Trafford,Slot 8:00-10:00
+Manchester United vs Brighton,Day 2,Stamford Bridge,Slot 2:00-4:00
+Manchester United vs Everton,Day 6,Goodison Park,Slot 5:00-7:00
+New Castle vs Tottenham,Day 32,Villa Park,Slot 2:00-4:00
+New Castle vs Brentford,Day 14,Villa Park,Slot 5:00-7:00
+New Castle vs Brighton,Day 39,Stamford Bridge,Slot 8:00-10:00
+New Castle vs Everton,Day 28,Elland Road,Slot 5:00-7:00
+Tottenham vs Brentford,Day 3,St. James' Park,Slot 2:00-4:00
+Tottenham vs Brighton,Day 25,Elland Road,Slot 2:00-4:00
+Tottenham vs Everton,Day 30,Villa Park,Slot 8:00-10:00
+Brentford vs Brighton,Day 26,Villa Park,Slot 8:00-10:00
+Brentford vs Everton,Day 12,Goodison Park,Slot 8:00-10:00
+Brighton vs Everton,Day 31,Emirates Stadium,Slot 2:00-4:00
