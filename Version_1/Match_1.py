@@ -5,24 +5,29 @@ import random
 from itertools import combinations
 from collections import defaultdict
 import csv
+import matplotlib.pyplot as plt
+import math
+import statistics
 
 # Example data
 teams = [
-    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United","New Castle","Tottenham","Brentford","Brighton","Everton"
+    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United","New Castle",
+    "Tottenham","Brentford","Brighton","Everton"
 ]
 
 venues = [
-    "Etihad Stadium", "Emirates Stadium", "Anfield", "Stamford Bridge", "Old Trafford","Wembley","Goodison Park","St. James' Park","Villa Park","Elland Road"
+    "Etihad Stadium", "Emirates Stadium", "Anfield", "Stamford Bridge", "Old Trafford",
+    "Wembley","Goodison Park","St. James' Park","Villa Park","Elland Road"
 ]
-# days = [f"Day {i}" for i in range(1, 71)] 
-days = [f"Day {i}" for i in range(1, 41)] 
 
- 
+days = [f"Day {i}" for i in range(1,41)] 
+
 time_slots = ["2:00-4:00", "5:00-7:00", "8:00-10:00"]
 
 # Generate all unique matches
 matches = list(combinations(teams, 2))
 
+#============== Population ============
 # Helper function to generate all possible slots
 def all_possible_slots():
     slots = []
@@ -44,9 +49,11 @@ def create_individual():
     used_slots = set()
     team_played_day = defaultdict(set)
 
-    for match in matches:
+    matches_copy = matches.copy()
+    random.shuffle(matches_copy)
+
+    for match in matches_copy:
         assigned = False
-        random.shuffle(available_slots)
         for slot in available_slots:
             day, time_slot, venue = slot
             if slot in used_slots:
@@ -60,13 +67,28 @@ def create_individual():
             team_played_day[team2].add(day)
             assigned = True
             break
+        
         if not assigned:
             raise Exception("Couldn't assign all matches without conflicts!")
+    
     return schedule
 
-#Base Fitness Function
+# Population creation with diversity
+def create_population(size):
+    population = []
+    while len(population) < size:
+        individual = create_individual()
+        # Check if the individual is already in the population (to avoid identical schedules)
+        if individual not in population:
+            population.append(individual)
+    return population
+
+
+#============== Fitness Function ==================
+# Base Fitness Function
 def fitness_function(schedule):
     penalty = 0
+    bonus = 0
     team_schedule = defaultdict(list)
     venue_schedule = defaultdict(list)
 
@@ -83,101 +105,69 @@ def fitness_function(schedule):
         plays.sort()
         played_days = [d for d, _ in plays]
 
-        if len(set(played_days)) < len(played_days):  
+        if len(set(played_days)) < len(played_days):
             penalty += 50
 
         for i in range(1, len(played_days)):
-            if played_days[i] - played_days[i-1] == 1:  
+            if played_days[i] - played_days[i - 1] == 1:
                 penalty += 20
+
+        if len(set(played_days)) > 1:
+            try:
+                var = statistics.variance(played_days)
+                bonus += var * 0.5  
+            except statistics.StatisticsError:
+                pass  
 
     for slot, matches_at_slot in venue_schedule.items():
         if len(matches_at_slot) > 1:
             penalty += 100 * (len(matches_at_slot) - 1)
 
-    fitness = 1000 - penalty  
-    if penalty == 0:
-        print("Fitness value: 1000 (No penalties)")
-    else:
-        print(f"Fitness value: {1000 - penalty} (Penalties applied)")
-
+    fitness = max(0, 1000 - penalty + bonus)
     return fitness
 
-# Fitness Sharing Function
-def shared_fitness(individual, population, sigma_share=0.3, alpha=1):
-    def similarity(ind1, ind2):
-        shared = sum(1 for m1, m2 in zip(ind1, ind2) if m1[:3] == m2[:3])
-        return shared / len(ind1)
 
-    sh_sum = sum(
-        (1 - (similarity(individual, other) / sigma_share) ** alpha) if similarity(individual, other) < sigma_share else 0
-        for other in population
-    )
-    raw_fitness = fitness_function(individual)
-    return raw_fitness / (1 + sh_sum)
-
-# Population creation
-def create_population(size):
-    return [create_individual() for _ in range(size)]
+#=============Genetic Algorithm Functions============
 
 # Tournament Selection
-def tournament_selection(population, tournament_size=3):
-    tournament = random.sample(population, tournament_size)
-    fitnesses = [shared_fitness(ind, population) for ind in tournament]
-    winner_index = fitnesses.index(max(fitnesses))
-    return tournament[winner_index]
-                    
-# Order Crossover 
-def order_crossover(parent1, parent2, crossover_rate=0.7):
-    size = len(parent1)
-    if random.random() > crossover_rate:
-        return parent1[:], parent2[:]  # No crossover, return clones
+def tournament_selection(population, pool_size, tournament_size=5):
+    mating_pool = []
 
-    # Select two crossover points
-    start, end = sorted(random.sample(range(size), 2))
+    for _ in range(pool_size):
+        # Pick k individuals randomly (without replacement) for the tournament
+        tournament = random.sample(population, tournament_size)
+        
+        # Calculate fitness for each individual in the tournament
+        fitnesses = [fitness_function(ind) for ind in tournament]
+        # Select the best (deterministic selection: p = 1)
+        winner_index = fitnesses.index(max(fitnesses))
+        winner = tournament[winner_index]
+        
+        # Add winner to mating pool
+        mating_pool.append(winner)
 
-    # Extract match identities (just teams, not day/slot/venue)
-    matches1 = [(m[0], m[1]) for m in parent1]
-    matches2 = [(m[0], m[1]) for m in parent2]
+    return mating_pool
 
-    # Build child1
-    segment1 = matches1[start:end]
-    remaining1 = [m for m in matches2 if m not in segment1]
-    child1_matches = remaining1[:start] + segment1 + remaining1[start:]
+# Order Crossover (OX)
+def order_crossover(parent1, parent2, crossover_rate=0.8):
+    if random.random() >= crossover_rate:
+        # No crossover, return the parents as they are
+        return parent1, parent2
 
-    # Build child2
-    segment2 = matches2[start:end]
-    remaining2 = [m for m in matches1 if m not in segment2]
-    child2_matches = remaining2[:start] + segment2 + remaining2[start:]
+    # randomly select two points for the crossover
+    point1 = random.randint(0, len(parent1) - 1)
+    point2 = random.randint(point1 + 1, len(parent1))  # Make sure point2 > point1
 
-    # Reassign slots freshly
-    def assign_slots(child_matches):
-        schedule = []
-        used_slots = set()
-        team_played_day = defaultdict(set)
+    # Extract the segment from parent1
+    segment = parent1[point1:point2]
+    offspring1 = [match for match in parent2 if match not in segment]
+    offspring1 = offspring1[:point1] + segment + offspring1[point1:]
 
-        for match in child_matches:
-            assigned = False
-            for slot in all_possible_slots():
-                day, time_slot, venue = slot
-                if slot in used_slots:
-                    continue
-                team1, team2 = match
-                if day in team_played_day[team1] or day in team_played_day[team2]:
-                    continue
-                schedule.append((team1, team2, day, time_slot, venue))
-                used_slots.add(slot)
-                team_played_day[team1].add(day)
-                team_played_day[team2].add(day)
-                assigned = True
-                break
-            if not assigned:
-                raise Exception("Couldn't assign match during crossover.")
-        return schedule
+    segment2 = parent2[point1:point2]
+    offspring2 = [match for match in parent1 if match not in segment2]
+    offspring2 = offspring2[:point1] + segment2 + offspring2[point1:]
 
-    child1_schedule = assign_slots(child1_matches)
-    child2_schedule = assign_slots(child2_matches)
-
-    return child1_schedule, child2_schedule
+    return offspring1, offspring2
 
 # Swap Mutation
 def swap_mutation(schedule, mutation_rate=0.1):
@@ -187,7 +177,7 @@ def swap_mutation(schedule, mutation_rate=0.1):
 
         match_to_mutate = random.choice(schedule)
         match_to_mutate = list(match_to_mutate)
-        match_to_mutate[3] = random.choice(time_slots)
+        match_to_mutate[2] = random.choice(days)
         match_to_mutate[4] = random.choice(venues)
 
         for i in range(len(schedule)):
@@ -200,54 +190,78 @@ def swap_mutation(schedule, mutation_rate=0.1):
 # Survivor Selection (elitism)
 def survivor_selection(population, offspring):
     combined = population + offspring
-    combined_sorted = sorted(combined, key=lambda ind: shared_fitness(ind, combined), reverse=True)
+    combined_sorted = sorted(combined, key=lambda ind: fitness_function(ind), reverse=True)
     return combined_sorted[:len(population)]
 
-# Run Genetic Algorithm
-def run_genetic_algorithm(population_size=10, max_generations=100, convergence_threshold=1e-3, max_no_improvement=10,mutation_rate = 0.1, crossover_rate=0.7):
-    population = create_population(population_size)
-    best_fitness = float('-inf')
-    generations_without_improvement = 0
+
+
+NUM_ISLANDS = 4
+MIGRATION_INTERVAL = 10  # generations
+MIGRATION_COUNT = 2      # individuals to migrate between islands
+
+def create_islands(pop_size, num_islands):
+    island_size = pop_size // num_islands
+    return [create_population(island_size) for _ in range(num_islands)]
+
+#====================Run Genetic Algorithm=============
+
+def run_island_genetic_algorithm(
+    population_size=40,
+    max_generations=5000,           # Fixed to 5000 generations
+    mutation_rate=0.4,
+    crossover_rate=0.9
+):
+    islands = create_islands(population_size, NUM_ISLANDS)
+    best_overall = None
+    best_fitness_overall = float('-inf')
+    fitness_history = []
 
     for generation in range(max_generations):
-        print(f"\nGeneration {generation + 1}:")
-        fitnesses = [shared_fitness(ind, population) for ind in population]
-        best_current_fitness = max(fitnesses)
-        best_index = fitnesses.index(best_current_fitness)
-        best_individual = population[best_index]
+        print(f"\n=== Generation {generation + 1} ===")
 
-        if best_current_fitness - best_fitness < convergence_threshold:
-            generations_without_improvement += 1
-        else:
-            best_fitness = best_current_fitness
-            generations_without_improvement = 0
+        # Evolve each island independently
+        for i in range(NUM_ISLANDS):
+            population = islands[i]
+            offspring = []
 
-        print(f"Best fitness: {best_current_fitness}")
-        for match in best_individual:
-            print(f"{match[0]} vs {match[1]} on {match[2]} - Slot {match[3]} at {match[4]}")
+            for _ in range(len(population) // 2):
+                parent1, parent2 = tournament_selection(population, pool_size=2, tournament_size=3)
+                child1, child2 = order_crossover(parent1, parent2, crossover_rate)
+                child1 = swap_mutation(child1, mutation_rate)
+                child2 = swap_mutation(child2, mutation_rate)
+                offspring.extend([child1, child2])
 
-        if generations_without_improvement >= max_no_improvement:
-            print("\nTermination condition reached: No improvement after several generations.")
-            break
+            islands[i] = survivor_selection(population, offspring)
 
-        if generations_without_improvement > 5:
-            mutation_rate = min(1.0, mutation_rate * 1.1)
-        else:
-            mutation_rate = max(0.01, mutation_rate * 0.9)
+        # Perform migration
+        if generation % MIGRATION_INTERVAL == 0 and generation > 0:
+            print(">> Migration happening between islands...")
+            for i in range(NUM_ISLANDS):
+                source_island = islands[i]
+                target_island = islands[(i + 1) % NUM_ISLANDS]
 
-        offspring = []
-        for _ in range(population_size // 2):
-            parent1 = tournament_selection(population)
-            parent2 = tournament_selection(population)
-            child1, child2 = order_crossover(parent1, parent2, crossover_rate)
-            child1 = swap_mutation(child1, mutation_rate)
-            child2 = swap_mutation(child2, mutation_rate)
-            offspring.extend([child1, child2])
+                migrants = sorted(source_island, key=lambda ind: fitness_function(ind), reverse=True)[:MIGRATION_COUNT]
+                replacees = sorted(target_island, key=lambda ind: fitness_function(ind))[:MIGRATION_COUNT]
 
-        population = survivor_selection(population, offspring)
+                for m, r in zip(migrants, replacees):
+                    idx = target_island.index(r)
+                    target_island[idx] = m
 
-        
-    return best_individual, best_fitness
+        # Track best solution globally
+        for pop in islands:
+            best_in_island = max(pop, key=fitness_function)
+            fitness = fitness_function(best_in_island)
+            if fitness > best_fitness_overall:
+                best_fitness_overall = fitness
+                best_overall = best_in_island
+
+        fitness_history.append(best_fitness_overall)
+
+    print(f"\nTerminating: Reached maximum number of generations ({max_generations}).")
+    return best_overall, best_fitness_overall, fitness_history
+
+
+
 
 # === GUI Helper Functions ===
 current_schedule = []
@@ -264,18 +278,30 @@ def run_ga_thread():
             # Set the seed BEFORE anything random happens
             random.seed(seed_val)
 
-            schedule, score = run_genetic_algorithm(pop_size, generations, mutation_rate=mutation, crossover_rate=cross)
+            # schedule, score = run_genetic_algorithm(pop_size, generations, mutation_rate=mutation, crossover_rate=cross)
+            schedule, score ,fitness_history = run_island_genetic_algorithm(pop_size, generations, mutation_rate=mutation, crossover_rate=cross)
             current_schedule.clear()
             current_schedule.extend(schedule)
-
+            
             lbl_score["text"] = f"Best Fitness: {score:.2f}"
             tree.delete(*tree.get_children())
             for match in schedule:
                 tree.insert("", "end", values=(f"{match[0]} vs {match[1]}", match[2], match[4], f"Slot {match[3]}"))
+            
+            # fitness_history.reverse()
+            plt.figure(figsize=(10, 4))
+            plt.plot(fitness_history,  linestyle='-', color='blue')
+            plt.title("Best Fitness Over Generations")
+            plt.xlabel("Generation")
+            plt.ylabel("Fitness")
+            plt.grid(True)
+            plt.show()
+
         except Exception as e:
             messagebox.showerror("Error", str(e))
     threading.Thread(target=task).start()
 
+# Save schedule
 def save_schedule(schedule, fmt):
     if not schedule:
         messagebox.showinfo("Info", "No schedule to save.")
@@ -318,7 +344,7 @@ def save_schedule(schedule, fmt):
                 line = [f"{match[0]} vs {match[1]}", match[2], match[4], f"Slot {match[3]}"]
                 f.write(" | ".join(line) + "\n")
 
-# === GUI Code ===
+# GUI Code 
 def add_team():
     new_team = entry_team.get().strip()
     if new_team and new_team not in teams:
@@ -451,12 +477,4 @@ btn_day.grid(row=0, column=5, padx=5)
 
 # Apply initial (light) theme
 apply_theme()
-
 root.mainloop()
-
-
-
-
-
-
-
