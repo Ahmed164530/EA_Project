@@ -11,8 +11,8 @@ import statistics
 
 # Example data
 teams = [
-    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United","New Castle",
-    "Tottenham","Brentford","Brighton","Everton"
+    "Manchester City", "Arsenal", "Liverpool", "Chelsea","Manchester United",
+    "New Castle","Tottenham","Brentford","Brighton","Everton"
 ]
 
 venues = [

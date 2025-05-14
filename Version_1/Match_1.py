@@ -261,8 +261,6 @@ def run_island_genetic_algorithm(
     return best_overall, best_fitness_overall, fitness_history
 
 
-
-
 # === GUI Helper Functions ===
 current_schedule = []
 
